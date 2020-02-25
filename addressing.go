@@ -43,10 +43,6 @@ func destinationAddr(rw io.ReadWriter) (*net.TCPAddr, error)  {
 		if err != nil {
 			return nil, err
 		}
-		if len(ips) == 0 {
-			rw.Write([]byte{socksV5, errorAddressTypeNotSupported})
-			return nil, fmt.Errorf("no ip for domain %s", string(domain))
-		}
 		ip = ips[0]
 	} else if buf[0] == ipv6 {
 		rw.Write([]byte{socksV5, errorAddressTypeNotSupported})

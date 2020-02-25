@@ -12,7 +12,7 @@ const (
 	ipv6       = 0x04
 )
 
-func destinationAddr(rw io.ReadWriter) (*net.TCPAddr, error)  {
+func destinationAddr(rw io.ReadWriter) (*net.TCPAddr, error) {
 	buf := make([]byte, 1)
 	_, err := rw.Read(buf)
 	if err != nil {
@@ -45,8 +45,11 @@ func destinationAddr(rw io.ReadWriter) (*net.TCPAddr, error)  {
 		}
 		ip = ips[0]
 	} else if buf[0] == ipv6 {
-		rw.Write([]byte{socksV5, errorAddressTypeNotSupported})
-		return nil, fmt.Errorf("ipv6 not supported")
+		ip = make([]byte, 16)
+		_, err := rw.Read(ip)
+		if err != nil {
+			return nil, err
+		}
 	} else {
 		rw.Write([]byte{socksV5, errorAddressTypeNotSupported})
 		return nil, fmt.Errorf("unknown address type")
@@ -61,4 +64,3 @@ func destinationAddr(rw io.ReadWriter) (*net.TCPAddr, error)  {
 
 	return &net.TCPAddr{IP: ip, Port: port}, nil
 }
-

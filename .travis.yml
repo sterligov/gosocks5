@@ -1,0 +1,22 @@
+os: linux
+language: go
+go:
+- 1.13.x
+env: GO111MODULE=on
+script:
+- make deps test
+- docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+- make docker-push
+deploy:
+  provider: script
+  cleanup: true
+  script: bash deploy.sh
+  on:
+    branch: master
+before_install:
+- openssl aes-256-cbc -K $encrypted_0909dfde1526_key -iv $encrypted_0909dfde1526_iv
+  -in .travis/deploy_rsa.enc -out .travis/deploy_rsa -d
+- eval "$(ssh-agent -s)"
+- cp .travis/deploy_rsa ~/.ssh/id_rsa
+- chmod 600 ~/.ssh/id_rsa
+- ssh-add ~/.ssh/id_rsa

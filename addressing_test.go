@@ -6,26 +6,26 @@ import (
 )
 
 func TestDestinationAddrIP4(t *testing.T) {
-	b := []byte{1,127,0,0,1,0,80}
+	b := []byte{1, 127, 0, 0, 1, 0, 80}
 	buf := bytes.NewBuffer(b)
 	addr, err := destinationAddr(buf)
 	if err != nil {
 		t.Errorf("Expected nil, got [%v]", err)
 	}
-	if addr.String() != "127.0.0.1:80" {
-		t.Errorf("Expected addr 127.0.0.1:80, got %s", addr.String())
+	if addr.String() != "127.0.0.1:80" && addr.String() != "[::1]:80" {
+		t.Errorf("Expected addr 127.0.0.1:80 or [::1]:80, got %s", addr.String())
 	}
 }
 
 func TestDestinationAddrDomain(t *testing.T) {
-	b := []byte{3,9,'l','o','c','a','l','h','o','s','t',0,80}
+	b := []byte{3, 9, 'l', 'o', 'c', 'a', 'l', 'h', 'o', 's', 't', 0, 80}
 	buf := bytes.NewBuffer(b)
 	addr, err := destinationAddr(buf)
 	if err != nil {
 		t.Errorf("Expected nil, got [%v]", err)
 	}
-	if addr.String() != "127.0.0.1:80" {
-		t.Errorf("Expected addr 127.0.0.1:80, got %s", addr.String())
+	if addr.String() != "127.0.0.1:80" && addr.String() != "[::1]:80" {
+		t.Errorf("Expected addr 127.0.0.1:80 or [::1]:80, got %s", addr.String())
 	}
 }
 
@@ -36,7 +36,7 @@ func TestDestinationAddrNotSupportedType(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected not supported type error, got nil")
 	}
-	expected := []byte{5,8}
+	expected := []byte{5, 8}
 	if !bytes.Equal(expected, buf.Bytes()) {
 		t.Errorf("Excpected %v, got %v", expected, buf.Bytes())
 	}

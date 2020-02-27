@@ -125,30 +125,6 @@ func dial(client io.ReadWriter, raddr *net.TCPAddr) error {
 }
 
 func copyData(dst io.Writer, src io.Reader, errCh chan<- error) {
-	// buf := make([]byte, 32*1024)
-	// for {
-	// 	nr, er := src.Read(buf)
-	// 	if nr > 0 {
-	// 		nw, ew := dst.Write(buf[0:nr])
-	// 		if ew != nil {
-	// 			errCh <- ew
-	// 			return
-	// 		}
-	// 		if nr != nw {
-	// 			errCh <- io.ErrShortWrite
-	// 			return
-	// 		}
-	// 	}
-	// 	if er != nil {
-	// 		if er != io.EOF {
-	// 			errCh <- er
-	// 			return
-	// 		}
-	// 		errCh <- nil
-	// 		return
-	// 	}
-	// }
 	_, err := io.Copy(dst, src)
-	log.Println("EERROR10: ", err)
 	errCh <- err
 }

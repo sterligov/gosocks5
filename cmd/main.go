@@ -2,11 +2,12 @@ package main
 
 import (
 	"flag"
-	"github.com/sterligov/socks5"
+	"log"
+	"os"
 	"strconv"
 	"time"
-	"os"
-	"log"
+
+	"github.com/sterligov/socks5"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 	username := flag.String("username", "", "")
 	password := flag.String("password", "", "")
 	maxConn := flag.Int("maxconn", 128, "Maximum connection number")
-	timeout := flag.Int("timeout", 5000, "Timeout in milliseconds")
+	timeout := flag.Int("deadline", 120, "Read-write deadline in seconds")
 
 	flag.Parse()
 
@@ -38,9 +39,7 @@ func main() {
 		Port:           *port,
 		Authorization:  authorizer,
 		MaxConnections: *maxConn,
-		Timeout:        *timeout,
+		Deadline:       time.Duration(*timeout) * time.Second,
 	}
 	s.Run()
 }
-
-

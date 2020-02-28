@@ -12,7 +12,7 @@ import (
 type Socks struct {
 	Port           string
 	MaxConnections int
-	Timeout        int // connection timeout in milliseconds
+	Deadline       time.Duration
 	Authorization  Authorizer
 }
 
@@ -49,17 +49,14 @@ func (s *Socks) Run() {
 
 		select {
 		case guard <- struct{}{}:
-			//time.AfterFunc(time.Duration(s.Timeout)*time.Millisecond, func() {
-			//	conn.Close()
-			//})
-		case <-time.After(10 * time.Millisecond):
+		case <-time.After(100 * time.Millisecond):
 			conn.Close()
 			log.Println("too many connections")
 			continue
 		}
 
 		go func() {
-			err := s.handle(conn)
+			err := s.handle(&connection{conn, s.Deadline})
 			conn.Close()
 			<-guard
 			if err != nil {
@@ -69,7 +66,7 @@ func (s *Socks) Run() {
 	}
 }
 
-func (s *Socks) handle(conn net.Conn) error {
+func (s *Socks) handle(conn *connection) error {
 	buf := make([]byte, 1)
 	_, err := conn.Read(buf)
 	if err != nil {
